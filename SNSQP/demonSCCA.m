@@ -1,5 +1,6 @@
 % demon SCCA problems
-clc; clear all; close all; addpath(genpath(pwd));
+clc; clear all; close all; 
+addpath(genpath(pwd));
 
 nx            = 200;
 ny            = 300;
