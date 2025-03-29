@@ -1,5 +1,6 @@
 % demon SPS problems
-clc; clear all; close all; addpath(genpath(pwd));
+clc; clear all; close all; 
+addpath(genpath(pwd));
 
 n             = 1000;
 s             = 10;
