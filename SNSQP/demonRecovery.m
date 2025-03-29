@@ -1,5 +1,6 @@
 % demon recovery problems
-clc; clear all; close all; addpath(genpath(pwd));
+clc; clear all; close all; 
+addpath(genpath(pwd));
  
 n          = 1000; 
 k          = ceil(0.01*n); % number of quadratic const
