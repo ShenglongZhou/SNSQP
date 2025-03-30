@@ -3,7 +3,7 @@ function Out = SNSQP(n,s,Q0,q0,Qi,qi,ci,ineqA,ineqb,eqA,eqb,lb,ub,pars)
 % This code aims at solving the sparse SQCQP in the form of
 %
 %         min             (1/2)(x'{Q_0}x)+q_0'x, 
-%         s.t. (1/2)x'8Qi{i}*x+qi(:,i)'*x+ci(i)<=0, i = 1,...,k,
+%         s.t. (1/2)x'*Qi{i}*x+qi(:,i)'*x+ci(i)<=0, i = 1,...,k,
 %                                 ineqA*x-ineqb<=0,
 %                                      eqA*x-eqb=0,
 %                                        lb<=x<=ub,
@@ -41,8 +41,8 @@ function Out = SNSQP(n,s,Q0,q0,Qi,qi,ci,ineqA,ineqb,eqA,eqb,lb,ub,pars)
 %             pars.itlser   -- Maximum nonumber of line search                        (default 5)
 %             pars.itmax    -- Maximum nonumber of iteration                          (default 10000)
 %             pars.show     -- Results shown at each iteration if pars.show=1         (default 1)
-%                              Results no shown at each iteration if pars.show=0
-%             pars.tol      -- Tolerance of the halting condition,                    (default 1e-6)
+%                              Results not shown at each iteration if pars.show=0
+%             pars.tol      -- Tolerance of the halting condition                    (default 1e-6)
 %
 % Outputs:
 %     Out.sol:           The sparse solution x
@@ -54,9 +54,9 @@ function Out = SNSQP(n,s,Q0,q0,Qi,qi,ci,ineqA,ineqb,eqA,eqb,lb,ub,pars)
 %---------------------------------------------------------------------------------------------------
 % This code is programmed based on the algorithm proposed in 
 % "Shuai Li, Shenglong Zhou, and Ziyan Luo, Sparse quadratically constrained
-%  quadratic programming via semismooth Newton method, arXiv:2503.15109,2025." 
-%  Send your comments and suggestions to <<< 24110488@bjtu.edu.cn / slzhou2021@163.com >>>
-%  Warning: Accuracy may not be guaranteed !!!!! 
+% quadratic programming via semismooth Newton method, arXiv:2503.15109,2025." 
+% Send your comments and suggestions to <<< 24110488@bjtu.edu.cn / slzhou2021@163.com >>>
+% Warning: Accuracy may not be guaranteed !!!!! 
 %---------------------------------------------------------------------------------------------------
 
 warning off;
@@ -69,14 +69,6 @@ if nargin < 14; pars = [];  end
  
 [dim,existcons,flagbd,lenf,show,x0,dualquad,dualineq,dualeq,dualbd,tau,tol,itmax,...
 itlser,gamma,sigma,alpha0,lb,ub] = setparameters(n,s,Qi,ineqA,eqA,lb,ub,pars);
-
-% The main body
-if  show
-    fprintf('\n Start to run the sover -- SNSQP\n');
-    fprintf(' -------------------------------------------------\n');
-    fprintf(' Iter        Error        Objective      Time(sec)\n');
-    fprintf(' -------------------------------------------------\n');
-end
 
 %--------------------------------Initialization---------------------------
 Fnorm    = @(var)norm(var,'fro')^2;
@@ -134,7 +126,16 @@ Indx    = 1:s ;
 Indqual = s+1:s+dim(1);
 Indineq = s+dim(1)+1:s+sum(dim(1:2));
 Indeq   = s+sum(dim(1:2))+1:s+sum(dim);
-   
+
+% The main body   
+
+if  show
+    fprintf('\n Start to run the sover -- SNSQP\n');
+    fprintf(' -------------------------------------------------\n');
+    fprintf(' Iter        Error        Objective      Time(sec)\n');
+    fprintf(' -------------------------------------------------\n');
+end
+
 for iter = 1:itmax    
     %--------------------------------Index selection---------------------------
     [~, T]     = maxk(x-tau*GradL,s,'ComparisonMethod','abs');
@@ -361,8 +362,6 @@ for iter = 1:itmax
     
 end
 
-
-
 % results output
 time             = toc(t0);
 Out.sol          = x;
@@ -380,7 +379,6 @@ if show
 end
 
 end
-
 
 % Set up parameters--------------------------------------------------------
 function [dim,existcons,flagbd,lenf,show,x0,dualquad,dualineq,dualeq,dualbd,...
@@ -432,7 +430,6 @@ else
 end
     
 end
-
 
 % Objection ---------------------------------------------------------------
 function f = FuncObj(xT,Q0,q0,T)
@@ -575,10 +572,5 @@ function x = my_cg(fx,b,cgtol,cgit,x)
         r  = r - a * w;  
         e0 = e;
         e  = norm(r,'fro')^2;
-    end 
-  
+    end   
 end
-
-
-
-
